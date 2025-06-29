@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Projet Christi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+    rel="stylesheet"
+  >
+  <style>
+    :root {
+      --bg-start: #f7f8fd;
+      --bg-end:   #e2e4f0;
+      --text:     #333;
+      --primary:  #4b6cb7;
+      --secondary:#182848;
+      --accent:   #ffb74d;
+      --card-bg:  #fff;
+      --bg-dark:  #121217;
+      --text-dark:#e0e0e0;
+      --card-dark:#1e1e25;
+    }
+    * { box-sizing: border-box; margin:0; padding:0 }
+    body {
+      font-family:'Poppins',sans-serif;
+      background:linear-gradient(135deg,var(--bg-start),var(--bg-end));
+      color:var(--text);
+      min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;
+      transition:background .3s,color .3s;
+    }
+    body.dark {
+      background:var(--bg-dark);
+      color:var(--text-dark);
+    }
+    header {
+      text-align:center; padding:2rem 1rem 1rem;
+    }
+    header h1 {
+      font-size:2.5rem; color:var(--primary);
+      animation:titlePulse 3s ease-in-out infinite;
+    }
+    @keyframes titlePulse {
+      0%,100%{ text-shadow:0 0 8px var(--primary) }
+      50%   { text-shadow:0 0 20px var(--accent) }
+    }
+    header p {
+      margin-top:.5rem; color:var(--secondary); font-weight:300;
+    }
+    header a { color:var(--primary); text-decoration:none }
+    header a:hover { text-decoration:underline }
+    .toggle-theme {
+      margin-top:1rem; padding:.4em .8em;
+      border:2px solid var(--primary);
+      border-radius:4px; background:transparent;
+      color:var(--primary); cursor:pointer;
+      transition:all .3s;
+    }
+    .toggle-theme:hover {
+      background:var(--primary); color:#fff;
+    }
+    #stats {
+      width:90%; max-width:600px;
+      background:var(--card-bg);
+      padding:1rem; border-radius:8px;
+      box-shadow:0 4px 12px rgba(0,0,0,.05);
+      margin-bottom:1.5rem;
+      text-align:center;
+      transition:background .3s,color .3s;
+    }
+    body.dark #stats {
+      background:var(--card-dark);
+      color:var(--text-dark);
+    }
+    #stats span { display:inline-block; margin:0 .5rem; }
+    #stats span:first-child { color:var(--accent); }
+    #donate {
+      display:inline-block; margin-top:.5rem;
+      background:var(--accent); color:#fff;
+      padding:.5rem 1rem; border:none; border-radius:4px;
+      text-decoration:none; font-weight:500;
+      transition:background .3s;
+    }
+    #donate:hover { background:#e0a248; }
+    form {
+      width:90%; max-width:600px;
+      background:var(--card-bg); padding:1.5rem;
+      border-radius:8px; box-shadow:0 8px 16px rgba(0,0,0,.1);
+      margin-bottom:2rem;
+      transition:background .3s,box-shadow .3s;
+    }
+    body.dark form {
+      background:var(--card-dark);
+      box-shadow:0 8px 16px rgba(0,0,0,.5);
+    }
+    form input, form textarea {
+      width:100%; padding:.75rem; margin-top:.5rem;
+      border:1px solid #ccc; border-radius:4px;
+      font-size:1rem; transition:all .3s;
+    }
+    body.dark form input,
+    body.dark form textarea {
+      background:#2a2a34; color:#ddd; border-color:#444;
+    }
+    form input:focus, form textarea:focus {
+      border-color:var(--primary); outline:none;
+    }
+    form button {
+      margin-top:1rem; background:var(--primary);
+      color:#fff; padding:.75rem 1.5rem;
+      border:none; border-radius:4px; cursor:pointer;
+      transition:background .3s,transform .2s;
+    }
+    form button:hover {
+      background:var(--secondary); transform:translateY(-2px);
+    }
+    #intentions {
+      width:90%; max-width:600px; margin-bottom:2rem;
+    }
+    .card {
+      position:relative; background:var(--card-bg);
+      padding:1.25rem; border-radius:8px;
+      box-shadow:0 4px 12px rgba(0,0,0,.05);
+      margin-bottom:1.5rem; opacity:0; transform:translateY(20px);
+      transition:background .3s,box-shadow .3s;
+    }
+    body.dark .card {
+      background:var(--card-dark);
+      box-shadow:0 4px 12px rgba(0,0,0,.5);
+    }
+    .card.animate {
+      animation:fadeInUp .5s ease-out forwards;
+    }
+    @keyframes fadeInUp {
+      to{ opacity:1; transform:translateY(0) }
+    }
+    .card.highlight { border:2px solid var(--accent) }
+    .meta {
+      font-size:.85rem; color:#777; margin-bottom:.75rem;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .candle {
+      position:absolute; top:1.25rem; right:1.25rem;
+      width:24px; height:48px; background:#f2f2f2;
+      border-radius:4px; box-shadow:inset 0 0 4px rgba(0,0,0,.1);
+      cursor:pointer; display:flex; align-items:flex-end;
+      justify-content:center; overflow:visible; transition:background .3s;
+    }
+    body.dark .candle { background:#333 }
+    .candle.liked { cursor:default; opacity:.7 }
+    .flame {
+      position:absolute; bottom:100%; left:50%;
+      width:14px; height:20px;
+      background:radial-gradient(circle at 50% 50%,#ffd54f 0%,#ff8f00 80%);
+      border-radius:50%; filter:blur(1px);
+      animation:flicker .2s infinite alternate, rise 2s infinite ease-in-out;
+      transition:transform .2s;
+    }
+    .flame.big {
+      transform: scale(1.3);
+      animation-duration:.1s;
+    }
+    .flame .smoke {
+      position:absolute; bottom:100%; left:50%;
+      width:8px; height:8px; background:rgba(200,200,200,0.5);
+      border-radius:50%; animation:smokeRise 4s infinite ease-out;
+    }
+    @keyframes flicker {
+      from{ opacity:1; transform:translate(-50%,0) scale(1) }
+      to  { opacity:.6; transform:translate(-50%,-2px) scale(1.1) }
+    }
+    @keyframes rise {
+      0%,100%{ transform:translate(-50%,0) scale(1) }
+      50%    { transform:translate(-50%,-5px) scale(1.05) }
+    }
+    @keyframes smokeRise {
+      0%  { transform:translate(-50%,0) scale(1); opacity:.7 }
+      100%{ transform:translate(-50%,-30px) scale(2); opacity:0 }
+    }
+    .count {
+      position:absolute; bottom:4px; right:4px;
+      background:var(--accent); color:#fff;
+      font-size:.7rem; padding:1px 4px; border-radius:4px;
+    }
+    .share {
+      position:absolute; bottom:4px; left:4px;
+      font-size:.7rem; background:transparent; border:none;
+      color:var(--primary); cursor:pointer;
+    }
+    .share:hover { text-decoration:underline }
+    footer {
+      padding:1rem; font-size:.85rem; text-align:center;
+      color:#555; transition:color .3s;
+    }
+    body.dark footer { color:#999 }
+    audio { display:none }
+    @media(max-width:640px){
+      header h1{font-size:2rem}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Projet Christi</h1>
+    <p>
+      Créé par Loïc – 
+      <a href="mailto:loicnikiema71@gmail.com">
+        loicnikiema71@gmail.com
+      </a>
+    </p>
+    <button class="toggle-theme">Mode nuit</button>
+  </header>
+
+  <!-- Stats et don -->
+  <div id="stats">
+    <span id="total-candles">💡 Total bougies : 0</span> |
+    <span id="month-intents">📅 Intentions ce mois : 0</span><br>
+    <a id="donate" 
+       href="mailto:loicnikiema71@gmail.com?subject=Don&amp;body=Je souhaite faire un don pour ce projet">
+      Faire un don
+    </a>
+  </div>
+
+  <!-- Musique de fond -->
+  <audio id="bg-audio" loop autoplay>
+    <source src="litanie.mp3" type="audio/mpeg">
+  </audio>
+
+  <form id="form">
+    <input type="text" id="name" placeholder="Votre nom (optionnel)" />
+    <textarea id="text" placeholder="Votre intention de prière…" required></textarea>
+    <button type="submit">Poster l’intention</button>
+  </form>
+
+  <div id="intentions"></div>
+  <footer>© 2025 Projet Christi. Tous droits réservés.</footer>
+
+  <script>
+    const form     = document.getElementById('form'),
+          list     = document.getElementById('intentions'),
+          audio    = document.getElementById('bg-audio'),
+          themeBtn = document.querySelector('.toggle-theme'),
+          stats    = {
+            total: document.getElementById('total-candles'),
+            month: document.getElementById('month-intents')
+          },
+          params   = new URLSearchParams(location.search),
+          shareId  = params.get('id'),
+          DAY      = 1000*60*60*24;
+    // autoplay fix
+    audio.volume = 0.05;
+    audio.play().catch(()=>{});
+
+    // theme
+    if(localStorage.theme==='dark') document.body.classList.add('dark');
+    themeBtn.onclick = () => {
+      document.body.classList.toggle('dark');
+      localStorage.theme = document.body.classList.contains('dark')?'dark':'light';
+      themeBtn.textContent = localStorage.theme==='dark'?'Mode clair':'Mode nuit';
+    };
+    themeBtn.textContent = document.body.classList.contains('dark')?'Mode clair':'Mode nuit';
+
+    // data & likes
+    let data     = JSON.parse(localStorage.getItem('intentions') || '[]'),
+        likedIds = JSON.parse(localStorage.getItem('likedIntentions') || '[]');
+
+    // stats update
+    function updateStats(){
+      const now = new Date();
+      const total = data.reduce((sum,i)=> sum + (i.candles||0), 0);
+      const monthCount = data.filter(i=>{
+        const d = new Date(i.date);
+        return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+      }).length;
+      stats.total.textContent = `🕯️ Total bougies : ${total}`;
+      stats.month.textContent = `📅 Intentions ce mois : ${monthCount}`;
+    }
+
+    // render
+    function render(){
+      updateStats();
+      list.innerHTML = data.map((it,i)=>`
+        <div class="card" id="card-${it.id}">
+          <div class="meta">
+            <span>${it.name||'Anonyme'} • ${new Date(it.date).toLocaleDateString()}</span>
+            <button class="share" onclick="shareIntent(${i})">Partager</button>
+          </div>
+          <div>${it.text}</div>
+          <div class="candle ${likedIds.includes(it.id)?'liked':''}"
+               onclick="likeIntent(${i})">
+            ${it.candles>0?'<div class="flame"><div class="smoke"></div></div>':''}
+            <span class="count">${it.candles||0}</span>
+          </div>
+        </div>`).join('');
+      list.querySelectorAll('.card').forEach((c,idx)=>{
+        c.style.animationDelay = `${idx*0.1}s`;
+        c.classList.add('animate');
+        if(shareId && c.id===`card-${shareId}`){
+          c.classList.add('highlight');
+          c.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+      });
+    }
+
+    // like once
+    window.likeIntent = i => {
+      const id = data[i].id;
+      if(likedIds.includes(id)) return;
+      data[i].candles = (data[i].candles||0) + 1;
+      likedIds.push(id);
+      localStorage.setItem('intentions', JSON.stringify(data));
+      localStorage.setItem('likedIntentions', JSON.stringify(likedIds));
+      render();
+      // flame "big" anim
+      const flame = document.querySelector(`#card-${id} .flame`);
+      if(flame){
+        flame.classList.add('big');
+        setTimeout(()=> flame.classList.remove('big'), 300);
+      }
+    };
+
+    // share link
+    window.shareIntent = i => {
+      const url = `${location.origin}${location.pathname}?id=${data[i].id}`;
+      navigator.clipboard.writeText(url).then(_=>{
+        alert('Lien copié dans le presse-papier !');
+      });
+    };
+
+    // submit
+    form.addEventListener('submit', e=>{
+      e.preventDefault();
+      const n = document.getElementById('name').value.trim(),
+            t = document.getElementById('text').value.trim();
+      if(!t) return;
+      data.unshift({
+        id: Date.now().toString(36),
+        name: n, text: t,
+        date: new Date().toISOString(),
+        candles: 0
+      });
+      localStorage.setItem('intentions', JSON.stringify(data));
+      form.reset();
+      render();
+    });
+
+    // init
+    render();
+  </script>
+</body>
+</html>

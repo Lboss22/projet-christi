@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="fr-FR">
+<head>
+    <meta charset="UTF-8">
+    <title>Projet Christi</title>
+    <meta name="description" content="Plateforme de partage d'intentions de prière et d'allumage de bougies virtuelles">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e9ecef;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 2rem;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+        }
+
+        .dark {
+            --text-color: #e9ecef;
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --border-color: #404040;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            transition: var(--transition);
+            letter-spacing: 0.025em;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #357abd);
+            color: white;
+            padding: var(--spacing-xl);
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            pointer-events: none;
+        }
+
+        header h1 {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: 0.05em;
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 i {
+            margin-right: var(--spacing-sm);
+            color: var(--secondary-color);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        header p {
+            font-size: var(--font-size-base);
+            opacity: 0.9;
+            margin-bottom: var(--spacing-lg);
+            letter-spacing: 0.025em;
+            position: relative;
+            z-index: 1;
+        }
+
+        header a {
+            color: white;
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,0.5);
+            transition: var(--transition);
+        }
+
+        header a:hover {
+            text-decoration-color: white;
+        }
+
+        #toggle-theme {
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            letter-spacing: 0.025em;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        #toggle-theme:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        #toggle-theme i {
+            margin-right: var(--spacing-xs);
+        }
+
+        /* Main content */
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-lg);
+        }
+
+        /* Stats section */
+        #stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        #stats span {
+            font-weight: 500;
+            font-size: var(--font-size-base);
+            letter-spacing: 0.025em;
+        }
+
+        #donate {
+            background: linear-gradient(135deg, var(--success-color), #229954);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            letter-spacing: 0.025em;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+        }
+
+        #donate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(39, 174, 96, 0.4);
+        }
+
+        #donate i {
+            margin-right: var(--spacing-xs);
+        }
+
+        /* Form */
+        form {
+            background: var(--card-bg);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--border-color);
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+            font-size: var(--font-size-base);
+            letter-spacing: 0.025em;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: var(--font-size-base);
+            letter-spacing: 0.025em;
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: var(--transition);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(135deg, var(--primary-color), #357abd);
+            color: white;
+            border: none;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(74, 144, 226, 0.4);
+        }
+
+        button[type="submit"] i {
+            margin-right: var(--spacing-sm);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            color: var(--text-color);
+            opacity: 0.8;
+            letter-spacing: 0.025em;
+        }
+
+        .meta i {
+            margin-right: var(--spacing-xs);
+            opacity: 0.6;
+        }
+
+        .text {
+            font-size: var(--font-size-base);
+            line-height: 1.7;
+            margin-bottom: var(--spacing-lg);
+            letter-spacing: 0.025em;
+            word-wrap: break-word;
+        }
+
+        .actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .share, .delete {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .delete:hover {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .candle {
+            background: linear-gradient(135deg, var(--secondary-color), #e67e22);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+        }
+
+        .candle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(243, 156, 18, 0.4);
+        }
+
+        .candle.liked {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            cursor: not-allowed;
+        }
+
+        .flame {
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #ff6b35, #f7931e);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 1.5s ease-in-out infinite alternate;
+            position: relative;
+            margin-right: var(--spacing-xs);
+        }
+
+        @keyframes flicker {
+            0% { transform: rotate(-1deg) scale(1); }
+            100% { transform: rotate(1deg) scale(1.1); }
+        }
+
+        .smoke {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: smoke 2s ease-in-out infinite;
+        }
+
+        @keyframes smoke {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.5); }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal:not([hidden]) {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: var(--spacing-2xl);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal:not([hidden]) .modal-content {
+            transform: scale(1);
+        }
+
+        .modal h3 {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-color);
+            letter-spacing: 0.025em;
+        }
+
+        .modal p {
+            font-size: var(--font-size-base);
+            margin-bottom: var(--spacing-xl);
+            color: var(--text-color);
+            opacity: 0.8;
+            letter-spacing: 0.025em;
+            line-height: 1.6;
+        }
+
+        .modal button {
+            padding: var(--spacing-md) var(--spacing-xl);
+            border: none;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 0 var(--spacing-sm);
+        }
+
+        .confirm {
+            background: linear-gradient(135deg, var(--danger-color), #c0392b);
+            color: white;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        .confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
+        }
+
+        .cancel {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .cancel:hover {
+            background: var(--border-color);
+            transform: translateY(-2px);
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: var(--spacing-xl);
+            right: var(--spacing-xl);
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-color), #357abd);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: var(--font-size-lg);
+            box-shadow: 0 4px 16px rgba(74, 144, 226, 0.4);
+            transition: var(--transition);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 6px 24px rgba(74, 144, 226, 0.5);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-top: var(--spacing-2xl);
+        }
+
+        footer p {
+            font-size: var(--font-size-sm);
+            opacity: 0.7;
+            margin-bottom: var(--spacing-lg);
+            letter-spacing: 0.025em;
+        }
+
+        footer img {
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        footer img:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* Audio */
+        #bg-audio {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: var(--spacing-lg);
+            width: 200px;
+            z-index: 100;
+            border-radius: var(--border-radius);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            :root {
+                --font-size-3xl: 1.75rem;
+                --font-size-2xl: 1.25rem;
+                --spacing-xl: 1.5rem;
+                --spacing-2xl: 2rem;
+            }
+
+            header {
+                padding: var(--spacing-lg);
+            }
+
+            #toggle-theme {
+                position: static;
+                margin-top: var(--spacing-lg);
+            }
+
+            main {
+                padding: var(--spacing-lg) var(--spacing-md);
+            }
+
+            #stats {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-xs);
+            }
+
+            .modal-content {
+                margin: var(--spacing-lg);
+            }
+
+            #bg-audio {
+                width: 150px;
+                bottom: var(--spacing-sm);
+                left: var(--spacing-sm);
+            }
+
+            .fab {
+                bottom: var(--spacing-lg);
+                right: var(--spacing-lg);
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 aria-label="Projet Christi"><i class="fa-solid fa-fire-flame-curved"></i> Projet Christi</h1>
+        <p>
+            Créé par Loïc Nicolas &ndash;
+            <a href="mailto:loicnikiema71@gmail.com">loicnikiema71@gmail.com</a>
+        </p>
+        <button id="toggle-theme" aria-pressed="false">
+            <i class="fa-regular fa-moon"></i> Mode nuit
+        </button>
+    </header>
+
+    <main>
+        <section id="stats" aria-live="polite">
+            <span id="total-candles">🕯️ Nombre total de bougies : 0</span>
+            <span id="month-intents">📅 Intentions ce mois : 0</span>
+            <a id="donate" href="mailto:loicnikiema71@gmail.com?subject=Don pour Projet Christi" role="button">
+                <i class="fa-solid fa-heart"></i> Faire un don
+            </a>
+        </section>
+
+        <section aria-labelledby="form-title">
+            <h2 id="form-title" class="sr-only">Poster une nouvelle intention</h2>
+            <form id="form">
+                <label for="name">Votre nom (optionnel)</label>
+                <input type="text" id="name" name="name" maxlength="32" autocomplete="off" placeholder="Ex. : Marie Dupont" />
+
+                <label for="text">Votre intention de prière</label>
+                <textarea id="text" name="text" required maxlength="400" placeholder="Ex. : Pour la santé de mon père…"></textarea>
+
+                <button type="submit">
+                    <i class="fa-solid fa-paper-plane"></i> Envoyer
+                </button>
+            </form>
+        </section>
+
+        <section id="intentions" aria-live="polite">
+            <!-- Les cartes d'intention seront injectées ici -->
+        </section>
+    </main>
+
+    <button class="fab" id="scrollTopBtn" aria-label="Remonter en haut"><i class="fa-solid fa-arrow-up"></i></button>
+
+    <footer>
+        <p>© 2025 Projet Christi. Tous droits réservés.</p>
+        <img src="jesus.png" alt="Icône spirituelle" width="120" height="auto" />
+    </footer>
+
+    <audio id="bg-audio" controls loop aria-label="Litanie en fond sonore">
+        <source src="litanie.mp3" type="audio/mpeg" />
+        Votre navigateur ne prend pas en charge l'élément audio.
+    </audio>
+
+    <div class="modal" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" hidden>
+        <div class="modal-content">
+            <h3 id="delete-modal-title">Confirmation de suppression</h3>
+            <p>Êtes-vous certain de vouloir supprimer définitivement cette intention de prière ?</p>
+            <div>
+                <button class="confirm" id="confirmDelete">
+                    <i class="fa-solid fa-trash"></i> Supprimer
+                </button>
+                <button class="cancel" id="cancelDelete">
+                    <i class="fa-solid fa-times"></i> Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constantes et sélecteurs
+        const form       = document.getElementById('form');
+        const list       = document.getElementById('intentions');
+        const themeBtn   = document.getElementById('toggle-theme');
+        const statsTotal = document.getElementById('total-candles');
+        const statsMonth = document.getElementById('month-intents');
+        const donateBtn  = document.getElementById('donate');
+        const scrollBtn  = document.getElementById('scrollTopBtn');
+        const deleteModal = document.getElementById('deleteModal');
+        let data        = []; // Utilisation de la mémoire au lieu de localStorage pour Claude.ai
+        let likedIds    = [];
+        let myIntentions = [];
+        let deleteIndex = null;
+
+        // Initialisation avec des données d'exemple
+        function initializeData() {
+            data = [
+                {
+                    id: 'example1',
+                    name: 'Marie',
+                    text: 'Pour la guérison de ma grand-mère qui est à l\'hôpital.',
+                    date: new Date().toISOString(),
+                    candles: 3
+                },
+                {
+                    id: 'example2',
+                    name: '',
+                    text: 'Pour la paix dans le monde et la fin des conflits.',
+                    date: new Date(Date.now() - 86400000).toISOString(), // Hier
+                    candles: 7
+                }
+            ];
+        }
+
+        // Réglage du thème
+        function updateTheme() {
+            const isDark = document.body.classList.toggle('dark');
+            themeBtn.setAttribute('aria-pressed', isDark);
+            themeBtn.innerHTML = isDark
+                ? '<i class="fa-regular fa-sun"></i> Mode clair'
+                : '<i class="fa-regular fa-moon"></i> Mode nuit';
+        }
+
+        // Initialiser le thème sombre par défaut si préféré par l'utilisateur
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+            themeBtn.setAttribute('aria-pressed', 'true');
+            themeBtn.innerHTML = '<i class="fa-regular fa-sun"></i> Mode clair';
+        }
+
+        themeBtn.addEventListener('click', updateTheme);
+
+        // Mise à jour des statistiques
+        function updateStats() {
+            const now = new Date();
+            const totalCandles = data.reduce((sum, i) => sum + (i.candles || 0), 0);
+            const monthCount = data.filter(i => {
+                const d = new Date(i.date);
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            }).length;
+            statsTotal.textContent = `🕯️ Nombre total de bougies : ${totalCandles}`;
+            statsMonth.textContent = `📅 Intentions ce mois : ${monthCount}`;
+        }
+
+        // Échappement du HTML
+        function escapeHTML(str) {
+            const entities = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            };
+            return str.replace(/[&<>"']/g, char => entities[char]);
+        }
+
+        // Rendu des intentions
+        function render() {
+            updateStats();
+            list.innerHTML = data.map((it, idx) => {
+                const name = it.name ? escapeHTML(it.name) : 'Anonyme';
+                const date = new Date(it.date).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                const canDelete = myIntentions.includes(it.id);
+                return `
+                    <article class="card" id="card-${it.id}" style="animation-delay:${idx*0.1}s">
+                        <header class="meta">
+                            <span><i class="fa-regular fa-user"></i> ${name}</span>
+                            <time class="date" datetime="${it.date}">
+                                <i class="fa-regular fa-calendar"></i> ${date}
+                            </time>
+                        </header>
+                        <p class="text">${escapeHTML(it.text)}</p>
+                        <div class="actions">
+                            <button class="share" onclick="shareIntent(${idx})" aria-label="Partager l'intention" title="Partager">
+                                <i class="fa-solid fa-share-alt"></i>
+                            </button>
+                            ${canDelete
+                                ? `<button class="delete" onclick="showDeleteModal(${idx})" aria-label="Supprimer l'intention" title="Supprimer">
+                                       <i class="fa-solid fa-trash"></i>
+                                   </button>`
+                                : ''
+                            }
+                        </div>
+                        <button class="candle ${likedIds.includes(it.id) ? 'liked' : ''}"
+                                onclick="likeIntent(${idx})"
+                                aria-label="Allumer une bougie"
+                                title="${likedIds.includes(it.id) ? 'Vous avez déjà allumé une bougie' : 'Allumer une bougie'}">
+                            ${it.candles > 0
+                                ? '<span class="flame" aria-hidden="true"><span class="smoke"></span></span>'
+                                : ''
+                            }
+                            <span class="count"><i class="fa-solid fa-fire"></i> ${it.candles || 0}</span>
+                        </button>
+                    </article>`;
+            }).join('');
+        }
+
+        // Gestion du like
+        function likeIntent(i) {
+            const id = data[i].id;
+            if (likedIds.includes(id)) {
+                showNotification('Vous avez déjà allumé une bougie pour cette intention', 'warning');
+                return;
+            }
+            data[i].candles = (data[i].candles || 0) + 1;
+            likedIds.push(id);
+            showNotification('Bougie allumée avec succès ! 🕯️', 'success');
+            render();
+        }
+
+        // Partage
+        function shareIntent(i) {
+            const url = `${location.origin}${location.pathname}?id=${data[i].id}`;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(() => {
+                    showNotification('Lien copié dans le presse-papier !', 'success');
+                }).catch(() => {
+                    showFallbackShare(url);
+                });
+            } else {
+                showFallbackShare(url);
+            }
+        }
+
+        function showFallbackShare(url) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h3>Partager cette intention</h3>
+                    <p>Copiez ce lien pour partager :</p>
+                    <input type="text" value="${url}" readonly style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <button class="cancel" onclick="this.closest('.modal').remove()">Fermer</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.hidden = false;
+            modal.querySelector('input').select();
+        }
+
+        // Système de notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--success-color)' : type === 'warning' ? 'var(--warning-color)' : 'var(--primary-color)'};
+                color: white;
+                padding: 16px 24px;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow-hover);
+                z-index: 2000;
+                font-weight: 500;
+                letter-spacing: 0.025em;
+                transform: translateX(100%);
+                transition: var(--transition);
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animation d'entrée
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Animation de sortie et suppression
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Suppression avec confirmation améliorée
+        function showDeleteModal(i) {
+            deleteIndex = i;
+            const intention = data[i];
+            const modalContent = deleteModal.querySelector('.modal-content p');
+            modalContent.innerHTML = `
+                Êtes-vous certain de vouloir supprimer définitivement cette intention de prière ?
+                <br><br>
+                <em style="opacity: 0.8; font-size: 0.9em;">"${escapeHTML(intention.text.substring(0, 50))}${intention.text.length > 50 ? '...' : ''}"</em>
+            `;
+            deleteModal.hidden = false;
+            
+            // Focus sur le bouton d'annulation par défaut
+            setTimeout(() => {
+                document.getElementById('cancelDelete').focus();
+            }, 100);
+        }
+
+        // Gestion des événements de suppression
+        document.getElementById('confirmDelete').addEventListener('click', () => {
+            if (deleteIndex !== null) {
+                const deletedIntention = data[deleteIndex];
+                myIntentions = myIntentions.filter(id => id !== deletedIntention.id);
+                data.splice(deleteIndex, 1);
+                showNotification('Intention supprimée avec succès', 'success');
+                render();
+            }
+            hideDeleteModal();
+        });
+
+        document.getElementById('cancelDelete').addEventListener('click', hideDeleteModal);
+
+        function hideDeleteModal() {
+            deleteModal.hidden = true;
+            deleteIndex = null;
+        }
+
+        // Fermer la modal en cliquant à l'extérieur
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                hideDeleteModal();
+            }
+        });
+
+        // Gestion des touches Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !deleteModal.hidden) {
+                hideDeleteModal();
+            }
+        });
+
+        // Soumission de formulaire avec validation améliorée
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const name = form.name.value.trim();
+            const text = form.text.value.trim();
+            
+            if (!text) {
+                showNotification('Veuillez saisir votre intention de prière', 'warning');
+                form.text.focus();
+                return;
+            }
+            
+            if (text.length < 10) {
+                showNotification('Votre intention doit contenir au moins 10 caractères', 'warning');
+                form.text.focus();
+                return;
+            }
+            
+            const id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+            const newIntention = { 
+                id, 
+                name, 
+                text, 
+                date: new Date().toISOString(), 
+                candles: 0 
+            };
+            
+            data.unshift(newIntention);
+            myIntentions.unshift(id);
+            
+            form.reset();
+            showNotification('Votre intention a été partagée avec succès ! 🙏', 'success');
+            render();
+            
+            // Scroll vers la nouvelle intention
+            setTimeout(() => {
+                const newCard = document.getElementById(`card-${id}`);
+                if (newCard) {
+                    newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        });
+
+        // Validation en temps réel
+        form.text.addEventListener('input', (e) => {
+            const remaining = 400 - e.target.value.length;
+            const counter = document.getElementById('char-counter');
+            if (!counter) {
+                const counterEl = document.createElement('div');
+                counterEl.id = 'char-counter';
+                counterEl.style.cssText = `
+                    font-size: 0.875rem;
+                    color: var(--text-color);
+                    opacity: 0.6;
+                    margin-top: -10px;
+                    margin-bottom: 15px;
+                    text-align: right;
+                `;
+                e.target.parentNode.insertBefore(counterEl, e.target.nextSibling);
+            }
+            document.getElementById('char-counter').textContent = `${remaining} caractères restants`;
+            document.getElementById('char-counter').style.color = remaining < 50 ? 'var(--warning-color)' : 'var(--text-color)';
+        });
+
+        // Bouton "Remonter" avec animation améliorée
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({ 
+                top: 0, 
+                behavior: 'smooth' 
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const shouldShow = window.scrollY > 300;
+            scrollBtn.style.display = shouldShow ? 'flex' : 'none';
+            
+            if (shouldShow) {
+                scrollBtn.style.transform = 'scale(1)';
+            }
+        });
+
+        // Recherche d'intention par ID dans l'URL
+        function checkUrlForIntention() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const intentionId = urlParams.get('id');
+            if (intentionId) {
+                setTimeout(() => {
+                    const targetCard = document.getElementById(`card-${intentionId}`);
+                    if (targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        targetCard.style.border = '2px solid var(--primary-color)';
+                        targetCard.style.boxShadow = '0 0 20px rgba(74, 144, 226, 0.3)';
+                        setTimeout(() => {
+                            targetCard.style.border = '1px solid var(--border-color)';
+                            targetCard.style.boxShadow = 'var(--shadow)';
+                        }, 3000);
+                    }
+                }, 500);
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeData();
+            render();
+            checkUrlForIntention();
+            
+            // Animation d'entrée pour le header
+            setTimeout(() => {
+                document.querySelector('header').style.transform = 'translateY(0)';
+                document.querySelector('header').style.opacity = '1';
+            }, 100);
+        });
+
+        // Style initial pour l'animation du header
+        document.querySelector('header').style.cssText += `
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: var(--transition);
+        `;
+    </script>
+</body>
+</html>
