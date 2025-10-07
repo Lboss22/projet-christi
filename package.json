@@ -1,0 +1,8 @@
+{
+  "name": "intentions-priere",
+  "version": "1.0.0",
+  "description": "Site d'intentions de prière",
+  "dependencies": {
+    "@netlify/neon": "^0.3.0"
+  }
+}

@@ -73,6 +73,11 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .form-card {
             background: white;
             border-radius: 15px;
@@ -155,13 +160,18 @@
             font-weight: bold;
         }
 
-        .btn:hover {
+        .btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        .btn:active {
+        .btn:active:not(:disabled) {
             transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .intentions-list {
@@ -235,13 +245,18 @@
             font-size: 1em;
         }
 
-        .candle-btn:hover {
+        .candle-btn:hover:not(:disabled) {
             background: #ffe0b2;
             transform: scale(1.05);
         }
 
-        .candle-btn:active {
+        .candle-btn:active:not(:disabled) {
             transform: scale(0.98);
+        }
+
+        .candle-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .candle-btn.lit {
@@ -333,6 +348,7 @@
             display: none;
             animation: slideInRight 0.5s ease-out;
             z-index: 1000;
+            max-width: 400px;
         }
 
         @keyframes slideInRight {
@@ -346,6 +362,10 @@
 
         .notification.success {
             border-left: 5px solid #4caf50;
+        }
+
+        .notification.error {
+            border-left: 5px solid #f44336;
         }
 
         footer {
@@ -411,6 +431,12 @@
             .action-btn {
                 width: 100%;
             }
+
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -448,7 +474,7 @@
                     <label for="anonymous" style="margin: 0;">Publier de manière anonyme</label>
                 </div>
                 
-                <button type="submit" class="btn">🕊️ Publier mon Intention</button>
+                <button type="submit" class="btn" id="submitBtn">🕊️ Publier mon Intention</button>
             </form>
         </div>
 
@@ -464,143 +490,75 @@
 
     <footer>
         <p>🙏 Que la paix soit avec vous</p>
-        <p style="margin-top: 10px;">Réalisé par <a href="#" target="_blank">Loic Nikiema</a></p>
+        <p style="margin-top: 10px;">Réalisé par <strong>Loic Nikiema</strong></p>
     </footer>
 
     <script>
-        // Backend simulé avec localStorage pour persistence
-        class IntentionBackend {
-            constructor() {
-                this.storageKey = 'intentions_de_priere';
-                this.likesKey = 'user_likes';
+        // Générer un identifiant unique pour l'utilisateur
+        function getUserFingerprint() {
+            let fingerprint = localStorage.getItem('user_fingerprint');
+            if (!fingerprint) {
+                fingerprint = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('user_fingerprint', fingerprint);
             }
-
-            // Récupérer toutes les intentions
-            getIntentions() {
-                const data = localStorage.getItem(this.storageKey);
-                return data ? JSON.parse(data) : this.getInitialIntentions();
-            }
-
-            // Intentions initiales pour démarrer
-            getInitialIntentions() {
-                return [
-                    {
-                        id: 1,
-                        author: 'Marie',
-                        text: 'Prions pour la paix dans le monde et pour que tous les cœurs s\'ouvrent à l\'amour de Dieu.',
-                        candles: 12,
-                        date: new Date(Date.now() - 86400000).toLocaleString('fr-FR', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        })
-                    },
-                    {
-                        id: 2,
-                        author: 'Anonyme',
-                        text: 'Pour la guérison de ma mère qui est malade. Que le Seigneur lui accorde sa miséricorde.',
-                        candles: 8,
-                        date: new Date(Date.now() - 43200000).toLocaleString('fr-FR', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        })
-                    },
-                    {
-                        id: 3,
-                        author: 'Jean-Paul',
-                        text: 'Pour tous les jeunes qui cherchent leur voie, que Dieu les guide vers la lumière.',
-                        candles: 15,
-                        date: new Date(Date.now() - 21600000).toLocaleString('fr-FR', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        })
-                    }
-                ];
-            }
-
-            // Sauvegarder les intentions
-            saveIntentions(intentions) {
-                localStorage.setItem(this.storageKey, JSON.stringify(intentions));
-            }
-
-            // Ajouter une intention
-            addIntention(intention) {
-                const intentions = this.getIntentions();
-                intentions.unshift(intention);
-                this.saveIntentions(intentions);
-                return intention;
-            }
-
-            // Récupérer les likes de l'utilisateur
-            getUserLikes() {
-                const data = localStorage.getItem(this.likesKey);
-                return data ? JSON.parse(data) : {};
-            }
-
-            // Sauvegarder les likes
-            saveUserLikes(likes) {
-                localStorage.setItem(this.likesKey, JSON.stringify(likes));
-            }
-
-            // Toggle un like
-            toggleLike(intentionId) {
-                const intentions = this.getIntentions();
-                const intention = intentions.find(i => i.id === intentionId);
-                if (!intention) return null;
-
-                const userLikes = this.getUserLikes();
-                
-                if (userLikes[intentionId]) {
-                    delete userLikes[intentionId];
-                    intention.candles = Math.max(0, intention.candles - 1);
-                } else {
-                    userLikes[intentionId] = true;
-                    intention.candles++;
-                }
-
-                this.saveUserLikes(userLikes);
-                this.saveIntentions(intentions);
-                return { intention, liked: !!userLikes[intentionId] };
-            }
+            return fingerprint;
         }
 
-        // Instance du backend
-        const backend = new IntentionBackend();
+        const userFingerprint = getUserFingerprint();
         let intentions = [];
         let userLikes = {};
+        let isLoading = false;
 
         // Initialiser l'application
-        function init() {
+        async function init() {
             showLoading();
-            setTimeout(() => {
-                loadIntentions();
+            try {
+                // Initialiser la base de données
+                await fetch('/api/init-db');
+                // Charger les intentions
+                await loadIntentions();
+            } catch (error) {
+                console.error('Erreur d\'initialisation:', error);
+                showNotification('Erreur de connexion. Veuillez rafraîchir la page.', 'error');
+            } finally {
                 hideLoading();
-            }, 500);
+            }
         }
 
-        // Charger les intentions
-        function loadIntentions() {
-            intentions = backend.getIntentions();
-            userLikes = backend.getUserLikes();
-            renderIntentions();
+        // Charger les intentions depuis l'API
+        async function loadIntentions() {
+            try {
+                const response = await fetch('/api/get-intentions', {
+                    headers: {
+                        'X-User-Fingerprint': userFingerprint
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Erreur réseau');
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    intentions = data.intentions;
+                    userLikes = data.userLikes;
+                    renderIntentions();
+                }
+            } catch (error) {
+                console.error('Erreur chargement:', error);
+                showNotification('Impossible de charger les intentions. Vérifiez votre connexion.', 'error');
+            }
         }
 
         // Afficher le loader
         function showLoading() {
+            isLoading = true;
             document.getElementById('loadingState').style.display = 'block';
             document.getElementById('intentionsList').style.display = 'none';
         }
 
         // Cacher le loader
         function hideLoading() {
+            isLoading = false;
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('intentionsList').style.display = 'flex';
         }
@@ -612,60 +570,106 @@
         }
 
         // Soumettre une intention
-        function submitIntention(e) {
+        async function submitIntention(e) {
             e.preventDefault();
             
-            const name = document.getElementById('name').value.trim();
-            const intentionText = document.getElementById('intention').value.trim();
-            const isAnonymous = document.getElementById('anonymous').checked;
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Publication...';
             
-            if (!intentionText) return;
-            
-            const intention = {
-                id: Date.now(),
-                author: isAnonymous || !name ? 'Anonyme' : name,
-                text: intentionText,
-                candles: 0,
-                date: new Date().toLocaleString('fr-FR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })
-            };
-            
-            backend.addIntention(intention);
-            loadIntentions();
-            
-            // Réinitialiser le formulaire
-            document.getElementById('intentionForm').reset();
-            toggleForm();
-            
-            // Notification
-            showNotification('🙏 Votre intention a été publiée avec succès. Que Dieu vous bénisse !', 'success');
+            try {
+                const name = document.getElementById('name').value.trim();
+                const intentionText = document.getElementById('intention').value.trim();
+                const isAnonymous = document.getElementById('anonymous').checked;
+                
+                if (!intentionText) {
+                    showNotification('Veuillez entrer une intention de prière', 'error');
+                    return;
+                }
+                
+                const response = await fetch('/api/add-intention', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        author: isAnonymous || !name ? 'Anonyme' : name,
+                        text: intentionText
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Réinitialiser le formulaire
+                    document.getElementById('intentionForm').reset();
+                    toggleForm();
+                    
+                    // Recharger les intentions
+                    await loadIntentions();
+                    
+                    // Notification
+                    showNotification('🙏 Votre intention a été publiée avec succès. Que Dieu vous bénisse !', 'success');
+                } else {
+                    throw new Error(data.error || 'Erreur lors de la publication');
+                }
+                
+            } catch (error) {
+                console.error('Erreur soumission:', error);
+                showNotification('Erreur lors de la publication. Veuillez réessayer.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🕊️ Publier mon Intention';
+            }
         }
 
         // Toggle bougie
-        function toggleCandle(id) {
-            const result = backend.toggleLike(id);
-            if (result) {
-                loadIntentions();
-                const message = result.liked ? 
-                    '🕯️ Vous priez pour cette intention' : 
-                    'Bougie éteinte';
-                showNotification(message, 'success');
+        async function toggleCandle(id, button) {
+            if (button.disabled) return;
+            
+            button.disabled = true;
+            
+            try {
+                const response = await fetch('/api/toggle-like', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Fingerprint': userFingerprint
+                    },
+                    body: JSON.stringify({ intentionId: id })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    await loadIntentions();
+                    const message = data.liked ? 
+                        '🕯️ Vous priez pour cette intention' : 
+                        'Bougie éteinte';
+                    showNotification(message, 'success');
+                }
+                
+            } catch (error) {
+                console.error('Erreur toggle like:', error);
+                showNotification('Erreur. Veuillez réessayer.', 'error');
+            } finally {
+                button.disabled = false;
             }
         }
 
         // Rafraîchir les intentions
-        function refreshIntentions() {
+        async function refreshIntentions() {
+            if (isLoading) return;
+            
             showLoading();
-            setTimeout(() => {
-                loadIntentions();
-                hideLoading();
+            try {
+                await loadIntentions();
                 showNotification('✅ Publications rafraîchies !', 'success');
-            }, 500);
+            } catch (error) {
+                showNotification('Erreur lors du rafraîchissement', 'error');
+            } finally {
+                hideLoading();
+            }
         }
 
         // Afficher notification
@@ -676,10 +680,10 @@
             
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 3000);
+            }, 4000);
         }
 
-        // Calculer la taille de la flamme en fonction des likes
+        // Calculer la taille de la flamme
         function getFlameScale(candles) {
             if (candles === 0) return 1;
             if (candles <= 5) return 1 + (candles * 0.05);
@@ -688,7 +692,7 @@
             return 2.25 + Math.min((candles - 20) * 0.02, 0.75);
         }
 
-        // Afficher les intentions (triées par nombre de bougies)
+        // Afficher les intentions
         function renderIntentions() {
             const container = document.getElementById('intentionsList');
             
@@ -702,10 +706,7 @@
                 return;
             }
             
-            // Trier par nombre de bougies (décroissant)
-            const sortedIntentions = [...intentions].sort((a, b) => b.candles - a.candles);
-            
-            container.innerHTML = sortedIntentions.map(intention => {
+            container.innerHTML = intentions.map(intention => {
                 const isLiked = userLikes[intention.id];
                 const flameScale = getFlameScale(intention.candles);
                 
@@ -718,7 +719,7 @@
                         <div class="intention-text">${intention.text}</div>
                         <div class="intention-footer">
                             <button class="candle-btn ${isLiked ? 'lit' : ''}" 
-                                    onclick="toggleCandle(${intention.id})">
+                                    onclick="toggleCandle(${intention.id}, this)">
                                 <div class="candle-container">
                                     <span class="candle-icon" style="transform: scale(${flameScale})">🕯️</span>
                                 </div>
